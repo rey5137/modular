@@ -1,2 +1,2 @@
 @org.springframework.modulith.NamedInterface("response")
-package com.rey.modular.payment.response;
+package com.rey.modular.payment.controller.response;

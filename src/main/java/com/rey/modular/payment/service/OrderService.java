@@ -2,7 +2,7 @@ package com.rey.modular.payment.service;
 
 import com.rey.modular.payment.repository.OrderRepository;
 import com.rey.modular.payment.repository.entity.OrderEntity;
-import com.rey.modular.payment.request.OrderRequest;
+import com.rey.modular.payment.controller.request.OrderRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

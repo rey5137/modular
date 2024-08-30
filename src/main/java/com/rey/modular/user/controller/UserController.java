@@ -1,9 +1,9 @@
 package com.rey.modular.user.controller;
 
 import com.rey.modular.common.response.GeneralResponse;
-import com.rey.modular.user.request.UserRequest;
-import com.rey.modular.user.response.UserIdResponse;
-import com.rey.modular.user.response.UserResponse;
+import com.rey.modular.user.controller.request.UserRequest;
+import com.rey.modular.user.controller.response.UserIdResponse;
+import com.rey.modular.user.controller.response.UserResponse;
 import com.rey.modular.user.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
