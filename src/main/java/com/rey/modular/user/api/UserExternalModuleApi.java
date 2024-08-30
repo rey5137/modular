@@ -69,6 +69,7 @@ public class UserExternalModuleApi implements UserApi {
         if(hostUri == null){
             throw new ApiErrorException(HttpStatus.SERVICE_UNAVAILABLE, GeneralResponse.error("unavailable", "Service unavailable"));
         }
+        return hostUri;
     }
 
 }
