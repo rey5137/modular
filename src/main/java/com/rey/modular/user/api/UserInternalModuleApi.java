@@ -4,7 +4,7 @@ import com.rey.modular.common.exception.ApiErrorException;
 import com.rey.modular.common.response.GeneralResponse;
 import com.rey.modular.user.UserApi;
 import com.rey.modular.user.controller.UserController;
-import com.rey.modular.user.response.UserResponse;
+import com.rey.modular.user.controller.response.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

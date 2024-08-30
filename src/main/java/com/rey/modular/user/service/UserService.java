@@ -2,7 +2,7 @@ package com.rey.modular.user.service;
 
 import com.rey.modular.user.repository.UserRepository;
 import com.rey.modular.user.repository.entity.UserEntity;
-import com.rey.modular.user.request.UserRequest;
+import com.rey.modular.user.controller.request.UserRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

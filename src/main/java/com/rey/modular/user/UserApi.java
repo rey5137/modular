@@ -1,7 +1,7 @@
 package com.rey.modular.user;
 
 import com.rey.modular.common.response.GeneralResponse;
-import com.rey.modular.user.response.UserResponse;
+import com.rey.modular.user.controller.response.UserResponse;
 
 import java.util.List;
 
