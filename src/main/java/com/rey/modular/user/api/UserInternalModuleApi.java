@@ -8,6 +8,7 @@ import com.rey.modular.user.controller.response.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 @Component
 @AllArgsConstructor
 @Slf4j
+@Primary
 public class UserInternalModuleApi implements UserApi {
 
     private final UserController userController;

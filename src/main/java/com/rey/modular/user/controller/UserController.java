@@ -21,7 +21,7 @@ import java.util.List;
 
 @Controller
 @Slf4j
-@RequestMapping("/user")
+@RequestMapping("${user.module.context-path}")
 @AllArgsConstructor
 public class UserController {
 
