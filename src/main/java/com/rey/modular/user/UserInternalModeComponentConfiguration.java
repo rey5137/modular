@@ -37,13 +37,16 @@ public class UserInternalModeComponentConfiguration {
     @Value("${server.port}")
     private Integer port;
 
-    private final String userModuleUUID = UUID.randomUUID().toString();
+    @Value("${user.module.name}")
+    private String moduleName;
+
+    private final String moduleUUID = UUID.randomUUID().toString();
 
     @PostConstruct
     public void init() {
         NewService newService = new NewService();
-        newService.setId("user_" + userModuleUUID);
-        newService.setName("user");
+        newService.setId(moduleName + "_" + moduleUUID);
+        newService.setName(moduleName);
         newService.setPort(port);
         newService.setCheck(ConsulAutoRegistration.createCheck(port, heartbeatProperties, consulDiscoveryProperties));
         consulClient.agentServiceRegister(newService);
@@ -51,7 +54,7 @@ public class UserInternalModeComponentConfiguration {
 
     @PreDestroy
     public void destroy() {
-        consulClient.agentServiceDeregister("user_" + userModuleUUID);
+        consulClient.agentServiceDeregister(moduleName + "_" + moduleUUID);
     }
 
 }

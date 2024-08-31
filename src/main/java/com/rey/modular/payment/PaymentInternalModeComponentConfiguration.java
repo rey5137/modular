@@ -34,13 +34,16 @@ public class PaymentInternalModeComponentConfiguration {
     @Value("${server.port}")
     private Integer port;
 
-    private final String paymentModuleUUID = UUID.randomUUID().toString();
+    @Value("${payment.module.name}")
+    private String moduleName;
+
+    private final String moduleUUID = UUID.randomUUID().toString();
 
     @PostConstruct
     public void init() {
         NewService newService = new NewService();
-        newService.setId("payment_" + paymentModuleUUID);
-        newService.setName("payment");
+        newService.setId(moduleName + "_" + moduleUUID);
+        newService.setName(moduleName);
         newService.setPort(port);
         newService.setCheck(ConsulAutoRegistration.createCheck(port, heartbeatProperties, consulDiscoveryProperties));
         consulClient.agentServiceRegister(newService);
@@ -48,6 +51,6 @@ public class PaymentInternalModeComponentConfiguration {
 
     @PreDestroy
     public void destroy() {
-        consulClient.agentServiceDeregister("payment_" + paymentModuleUUID);
+        consulClient.agentServiceDeregister(moduleName + "_" + moduleUUID);
     }
 }
