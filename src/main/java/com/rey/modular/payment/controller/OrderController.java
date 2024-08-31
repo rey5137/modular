@@ -21,7 +21,7 @@ import java.util.List;
 
 @Controller
 @Slf4j
-@RequestMapping("/payment")
+@RequestMapping("${payment.module.context-path}")
 @AllArgsConstructor
 public class OrderController {
 
