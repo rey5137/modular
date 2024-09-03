@@ -1,10 +1,14 @@
 package com.rey.modular.user.controller;
 
+import com.rey.modular.common.response.DataPageResponse;
 import com.rey.modular.common.response.GeneralResponse;
+import com.rey.modular.common.response.PageInfo;
 import com.rey.modular.user.controller.request.UserRequest;
+import com.rey.modular.user.controller.request.UserSearchRequest;
 import com.rey.modular.user.controller.response.UserIdResponse;
 import com.rey.modular.user.controller.response.UserResponse;
 import com.rey.modular.user.service.UserService;
+import com.rey.modular.user.service.model.User;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -50,12 +54,27 @@ public class UserController {
         }
         else {
             var userResponses = userEntities.stream()
-                    .map(entity -> new UserResponse(entity.getId(), entity.getName(), entity.getEmail()))
+                    .map(entity -> new UserResponse(entity.getId(), entity.getName(), entity.getEmail(), null))
                     .toList();
             var generalResponse = GeneralResponse.success(userResponses);
             log.info("--- End to get users ---");
             return new ResponseEntity<>(generalResponse, HttpStatus.OK);
         }
+    }
+
+    @PostMapping(value = "/users/search",
+            consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<GeneralResponse<DataPageResponse<UserResponse>>> searchUser(@RequestBody UserSearchRequest request) {
+        log.info("--- Start to search user ---");
+        var userPage = userService.searchUsers(request, List.of(User.ID, User.NAME, User.ROLE_TABLE_ID, User.ROLE_TABLE_NAME, User.ROLE_TABLE_DESCRIPTION, User.ROLE_GROUP_TABLE_NAME, User.ROLE_GROUP_TABLE_ID));
+        var userResponse = userPage.stream()
+                .map(UserResponse::new)
+                .toList();
+        var dataPageResponse = new DataPageResponse<>(userResponse, PageInfo.from(userPage));
+        var generalResponse = GeneralResponse.success(dataPageResponse);
+        log.info("--- End to search user ---");
+        return new ResponseEntity<>(generalResponse, HttpStatus.OK);
     }
 
 }

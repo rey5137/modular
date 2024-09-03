@@ -1,5 +1,6 @@
 package com.rey.modular.payment.config;
 
+import com.rey.modular.common.repository.BaseRepositoryImpl;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +23,8 @@ import javax.sql.DataSource;
 @EnableJpaRepositories(
         entityManagerFactoryRef = "paymentModuleEntityManager",
         transactionManagerRef = "paymentModuleTransactionManager",
-        basePackages = "com.rey.modular.payment.repository"
+        basePackages = "com.rey.modular.payment.repository",
+        repositoryBaseClass = BaseRepositoryImpl.class
 )
 public class PaymentDatasourceConfiguration {
 

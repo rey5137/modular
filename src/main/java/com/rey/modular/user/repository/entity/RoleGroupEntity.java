@@ -10,12 +10,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "user_profile")
+@Entity(name = "role_group")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserEntity {
+public class RoleGroupEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,11 +24,7 @@ public class UserEntity {
 
     @Column(name = "name")
     private String name;
-
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "role_id")
-    private Integer roleId;
-
+    
+    @Column(name = "description")
+    private String description;
 }

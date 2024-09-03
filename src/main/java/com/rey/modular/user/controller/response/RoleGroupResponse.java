@@ -2,17 +2,15 @@ package com.rey.modular.user.controller.response;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.rey.modular.user.service.model.User;
+import com.rey.modular.user.service.model.RoleGroup;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record UserResponse(
+public record RoleGroupResponse(
         Integer id,
         String name,
-        String email,
-        RoleResponse role
+        String description
 ) {
-
-    public UserResponse(User user) {
-        this(user.getId(), user.getName(), user.getEmail(), user.getRoleOptional().map(RoleResponse::new).orElse(null));
+    public RoleGroupResponse(RoleGroup roleGroup) {
+        this(roleGroup.getId(), roleGroup.getName(), roleGroup.getDescription());
     }
 }

@@ -10,7 +10,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Entity(name = "`balance_movement`")
+@Entity(name = "balance_movement")
 @Setter
 @Getter
 public class BalanceMovementEntity {

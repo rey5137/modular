@@ -53,6 +53,7 @@ public class OrderController {
     @GetMapping(value = "/orders/{orderId}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<GeneralResponse<OrderResponse>> getOrder(@PathVariable Integer orderId) {
         log.info("--- Start to get order ---");
+        orderService.test(orderId);
         OrderEntity orderEntity = orderService.findOrderById(orderId);
         List<BalanceMovementResponse> movementResponses = orderService.findBalanceMovementByOrderId(orderId).stream()
                 .map(entity -> new BalanceMovementResponse(entity.getId(), entity.getUserId(), entity.getAmount(), entity.getIsDebit()))

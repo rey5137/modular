@@ -1,5 +1,6 @@
 package com.rey.modular.user.config;
 
+import com.rey.modular.common.repository.BaseRepositoryImpl;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +22,8 @@ import javax.sql.DataSource;
 @EnableJpaRepositories(
         entityManagerFactoryRef = "userModuleEntityManager",
         transactionManagerRef = "userModuleTransactionManager",
-        basePackages = "com.rey.modular.user.repository"
+        basePackages = "com.rey.modular.user.repository",
+        repositoryBaseClass = BaseRepositoryImpl.class
 )
 public class UserDatasourceConfiguration {
 
