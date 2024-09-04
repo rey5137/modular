@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.util.Optional;
 
 
-public class PagingRequest {
+public class PagingRequest extends SearchRequest {
 
     @JsonProperty("page_number")
     private Optional<Integer> pageNumber = Optional.empty();
@@ -28,7 +28,7 @@ public class PagingRequest {
 
     public PageQueryOption getPageQueryOption() {
         boolean paging = pagingOptional.orElse(true);
-        if(!paging) {
+        if (!paging) {
             return PageQueryOption.NO_COUNT;
         }
         return queryOptionOptional.map(PageQueryOption::of)

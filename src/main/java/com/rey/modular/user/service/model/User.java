@@ -36,9 +36,9 @@ public class User extends EntityModel<Integer, User> {
     public static final StringColumn<User, QRoleGroupEntity> ROLE_GROUP_TABLE_NAME = Role.ROLE_GROUP_TABLE_NAME.withTable(ROLE_GROUP_TABLE, User::getOrCreateRole);
     public static final StringColumn<User, QRoleGroupEntity> ROLE_GROUP_TABLE_DESCRIPTION = Role.ROLE_GROUP_TABLE_DESCRIPTION.withTable(ROLE_GROUP_TABLE, User::getOrCreateRole);
 
-    public static final List<Column<User, QUserEntity, ?>> USER_COLUMNS = List.of(ID, NAME, EMAIL);
-    public static final List<Column<User, QRoleEntity, ?>> ROLE_COLUMNS = List.of(ROLE_TABLE_ID, ROLE_TABLE_NAME, ROLE_TABLE_DESCRIPTION);
-    public static final List<Column<User, QRoleGroupEntity, ?>> ROLE_GROUP_COLUMNS = List.of(ROLE_GROUP_TABLE_ID, ROLE_GROUP_TABLE_NAME, ROLE_GROUP_TABLE_DESCRIPTION);
+    public static final List<Column<User, ?, ?>> USER_COLUMNS = List.of(ID, NAME, EMAIL);
+    public static final List<Column<User, ?, ?>> ROLE_COLUMNS = List.of(ROLE_TABLE_ID, ROLE_TABLE_NAME, ROLE_TABLE_DESCRIPTION);
+    public static final List<Column<User, ?, ?>> ROLE_GROUP_COLUMNS = List.of(ROLE_GROUP_TABLE_ID, ROLE_GROUP_TABLE_NAME, ROLE_GROUP_TABLE_DESCRIPTION);
 
     private Integer id;
     private String name;

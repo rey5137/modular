@@ -15,6 +15,7 @@ import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 public class BaseRepositoryImpl <E, ID extends Serializable> extends SimpleJpaRepository<E, ID> implements BaseRepository<E, ID> {
@@ -71,6 +72,15 @@ public class BaseRepositoryImpl <E, ID extends Serializable> extends SimpleJpaRe
     public <R> Long count(QueryBuilder<R> queryBuilder) {
         BaseQuery<Long> baseQuery = queryBuilder.buildQuery(jpaQueryFactory, Long.class);
         return baseQuery.getQuery().fetchCount();
+    }
+
+    @Override
+    public <R> List<R> findAll(QueryBuilder<R> queryBuilder) {
+        BaseQuery<Tuple> baseQuery = queryBuilder.buildQuery(jpaQueryFactory, Tuple.class);
+        return baseQuery.getQuery()
+                .stream()
+                .map(tuple -> queryBuilder.buildResult(baseQuery, tuple))
+                .toList();
     }
 
 }

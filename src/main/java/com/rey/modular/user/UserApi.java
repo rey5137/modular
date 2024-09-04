@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface UserApi {
 
-    GeneralResponse<List<UserResponse>> getUsers(List<Integer> userIds);
+    GeneralResponse<List<UserResponse>> getUsers(List<Integer> userIds, List<String> responseFields);
 
 }

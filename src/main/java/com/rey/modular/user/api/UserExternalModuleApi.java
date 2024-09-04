@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
@@ -36,11 +37,16 @@ public class UserExternalModuleApi implements UserApi {
 
     @SneakyThrows
     @Override
-    public GeneralResponse<List<UserResponse>> getUsers(List<Integer> userIds) {
+    public GeneralResponse<List<UserResponse>> getUsers(List<Integer> userIds, List<String> responseFields) {
         log.info("Calling to [{}] to get users by [{}] id", host, userIds);
         return restClient.get()
-                .uri("/internal/users?ids={userIds}", String.join(",", userIds.stream().map(Object::toString).toList()))
-                .accept(MediaType.APPLICATION_JSON)
+                .uri(uriBuilder -> UriComponentsBuilder.fromUriString(host)
+                        .path("/internal/users")
+                        .queryParam("ids", userIds)
+                        .queryParam("response_fields", responseFields)
+                        .build(false)
+                        .toUri()
+                ).accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, (request, response) -> {
                     throw new ApiErrorException(response.getStatusCode(), objectMapper.readValue(response.getBody(), GeneralResponse.class));

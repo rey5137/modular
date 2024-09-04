@@ -51,25 +51,30 @@ public class UserService {
         userRepository.save(new UserEntity(null, "test10", "test10", null));
     }
 
-    public UserEntity createUser(UserRequest userRequest) {
+    public Integer createUser(UserRequest userRequest) {
         UserEntity userEntity = new UserEntity();
         userEntity.setName(userRequest.name());
         userEntity.setEmail(userRequest.email());
         userRepository.save(userEntity);
         log.info("Created user with [{}] id", userEntity.getId());
-        return userEntity;
+        return userEntity.getId();
     }
 
-    public List<UserEntity> getUserByIds(Collection<Integer> userIds) {
+    public List<User> getUserByIds(Collection<Integer> userIds, Collection<Column<User, ?, ?>> userColumns) {
         log.info("Finding users by ids [{}]", userIds);
-        List<UserEntity> userEntities = userRepository.findAllById(userIds);
-        log.info("Found {} users", userEntities.size());
-        return userEntities;
+        List<User> users = userRepository.findAll(new User.QueryBuilder(userColumns) {
+            @Override
+            protected void populatePredicates(List<Predicate> predicates, ModelQuery modelQuery) {
+                predicates.add(User.ID.getPath(modelQuery).in(userIds));
+            }
+        });
+        log.info("Found {} users", users.size());
+        return users;
     }
 
-    public Page<User> searchUsers(UserSearchRequest request, Collection<Column<User, ?, ?>> userFields) {
+    public Page<User> searchUsers(UserSearchRequest request, Collection<Column<User, ?, ?>> userColumns) {
         Integer pageSize = request.getPageSizeOptional().orElse(5);
-        return userRepository.findPage(new User.QueryBuilder(userFields) {
+        return userRepository.findPage(new User.QueryBuilder(userColumns) {
             @Override
             protected void populatePredicates(List<Predicate> predicates, ModelQuery modelQuery) {
                 request.getIdOptional().ifPresent(value -> {
@@ -81,6 +86,12 @@ public class UserService {
                     predicates.add(User.ROLE_GROUP_TABLE_ID.getPath(modelQuery).eq(value));
                 });
             }
+
+            @Override
+            protected void decorateQuery(ModelQuery query) {
+                query.getQuery().orderBy(User.ID.getPath(query).desc());
+            }
+
         }, pageSize, request.getPageNumber(), request.getPageQueryOption());
     }
 }

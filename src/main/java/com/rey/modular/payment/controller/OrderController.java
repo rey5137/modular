@@ -9,6 +9,7 @@ import com.rey.modular.payment.controller.request.OrderRequest;
 import com.rey.modular.payment.controller.response.OrderIdResponse;
 import com.rey.modular.payment.service.OrderService;
 import com.rey.modular.user.UserApi;
+import com.rey.modular.user.controller.response.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,7 @@ public class OrderController {
     public ResponseEntity<GeneralResponse<OrderIdResponse>> createOrder(@RequestBody OrderRequest request) {
         log.info("--- Start to create order ---");
         try {
-            userApi.getUsers(List.of(request.payer(), request.payee()));
+            userApi.getUsers(List.of(request.payer(), request.payee()), List.of(UserResponse.ID));
         }
         catch (ApiErrorException apiErrorException) {
             GeneralResponse<OrderIdResponse> generalResponses = GeneralResponse.error("not_found", "User not found");

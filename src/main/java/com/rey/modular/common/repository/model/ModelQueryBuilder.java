@@ -1,6 +1,5 @@
 package com.rey.modular.common.repository.model;
 
-import com.blazebit.persistence.querydsl.BlazeJPAQuery;
 import com.blazebit.persistence.querydsl.BlazeJPAQueryFactory;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
@@ -36,14 +35,14 @@ public class ModelQueryBuilder<T extends EntityPathBase<?>, P, M extends EntityM
         modelQuery.setQuery(queryFactory.from(rootTable.getQEntity(modelQuery)));
 
         if(columns.isEmpty() || Long.class.equals(resultClass)) {
-            modelQuery.setQuery(modelQuery.getQuery().select(literal(1)));
+            modelQuery.getQuery().select(literal(1));
         }
         else {
             Path[] selections = new Path[columns.size()];
             for (int i = 0; i < columns.size(); i++) {
                 selections[i] = columns.get(i).getPath(modelQuery);
             }
-            modelQuery.setQuery(modelQuery.getQuery().select(selections));
+            modelQuery.getQuery().select(selections);
         }
 
         List<Predicate> predicates = new ArrayList<>();
@@ -54,10 +53,11 @@ public class ModelQueryBuilder<T extends EntityPathBase<?>, P, M extends EntityM
             for(Predicate predicate : predicates){
                 builder.and(predicate);
             }
-            modelQuery.setQuery((BlazeJPAQuery) modelQuery.getQuery().where(builder));
+            modelQuery.getQuery().where(builder);
         }
 
-        return decorateQuery(modelQuery);
+        decorateQuery(modelQuery);
+        return modelQuery;
     }
 
     @Override
@@ -72,11 +72,9 @@ public class ModelQueryBuilder<T extends EntityPathBase<?>, P, M extends EntityM
         return decorateResult(result, tuple);
     }
 
-    protected void populatePredicates(List<Predicate> predicates, ModelQuery query) {}
+    protected void populatePredicates(List<Predicate> predicates, ModelQuery modelQuery) {}
 
-    protected ModelQuery decorateQuery(ModelQuery query) {
-        return query;
-    }
+    protected void decorateQuery(ModelQuery modelQuery) {}
 
     protected M decorateResult(M result, Tuple tuple) {
         return result;
