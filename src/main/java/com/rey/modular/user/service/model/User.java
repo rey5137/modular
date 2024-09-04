@@ -1,10 +1,11 @@
 package com.rey.modular.user.service.model;
 
-import com.querydsl.core.JoinType;
-import com.rey.modular.common.repository.ColumnField;
-import com.rey.modular.common.repository.EntityModel;
-import com.rey.modular.common.repository.ModelQueryBuilder;
-import com.rey.modular.common.repository.TableField;
+import com.rey.modular.common.repository.model.Column;
+import com.rey.modular.common.repository.model.EntityModel;
+import com.rey.modular.common.repository.model.IntegerColumn;
+import com.rey.modular.common.repository.model.ModelQueryBuilder;
+import com.rey.modular.common.repository.model.StringColumn;
+import com.rey.modular.common.repository.model.Table;
 import com.rey.modular.user.repository.entity.QRoleEntity;
 import com.rey.modular.user.repository.entity.QRoleGroupEntity;
 import com.rey.modular.user.repository.entity.QUserEntity;
@@ -12,27 +13,32 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Getter
 @Setter
 public class User extends EntityModel<Integer, User> {
 
-    public static final TableField<QUserEntity, QUserEntity> USER_TABLE = TableField.root(QUserEntity.userEntity);
-    public static final TableField<QUserEntity, QRoleEntity> ROLE_TABLE = USER_TABLE.joinTable(JoinType.LEFTJOIN, QRoleEntity.roleEntity, (parentEntity, qRoleEntity) -> parentEntity.roleId.eq(qRoleEntity.id));
-    public static final TableField<QRoleEntity, QRoleGroupEntity> ROLE_GROUP_TABLE = Role.ROLE_GROUP_TABLE.withParent(ROLE_TABLE);
+    public static final Table<QUserEntity, QUserEntity> USER_TABLE = Table.root(() -> new QUserEntity("user"));
+    public static final Table<QUserEntity, QRoleEntity> ROLE_TABLE = USER_TABLE.leftJoin(() -> new QRoleEntity("role"), (user, role) -> user.roleId.eq(role.id));
+    public static final Table<QRoleEntity, QRoleGroupEntity> ROLE_GROUP_TABLE = Role.ROLE_GROUP_TABLE.withParent(ROLE_TABLE);
 
-    public static final ColumnField<User, QUserEntity, Integer> ID = USER_TABLE.column(qUserEntity -> qUserEntity.id, User::setId);
-    public static final ColumnField<User, QUserEntity, String> NAME = USER_TABLE.column(qUserEntity -> qUserEntity.name, User::setName);
-    public static final ColumnField<User, QUserEntity, String> EMAIL = USER_TABLE.column(qUserEntity -> qUserEntity.email, User::setEmail);
+    public static final IntegerColumn<User, QUserEntity> ID = USER_TABLE.integerCol(user -> user.id, User::setId);
+    public static final StringColumn<User, QUserEntity> NAME = USER_TABLE.stringCol(user -> user.name, User::setName);
+    public static final StringColumn<User, QUserEntity> EMAIL = USER_TABLE.stringCol(user -> user.email, User::setEmail);
 
-    public static final ColumnField<User, QRoleEntity, Integer> ROLE_TABLE_ID = Role.ID.withTable(ROLE_TABLE, User::getOrCreateRole);
-    public static final ColumnField<User, QRoleEntity, String> ROLE_TABLE_NAME = Role.NAME.withTable(ROLE_TABLE, User::getOrCreateRole);
-    public static final ColumnField<User, QRoleEntity, String> ROLE_TABLE_DESCRIPTION = Role.DESCRIPTION.withTable(ROLE_TABLE, User::getOrCreateRole);
+    public static final IntegerColumn<User, QRoleEntity> ROLE_TABLE_ID = Role.ID.withTable(ROLE_TABLE, User::getOrCreateRole);
+    public static final StringColumn<User, QRoleEntity> ROLE_TABLE_NAME = Role.NAME.withTable(ROLE_TABLE, User::getOrCreateRole);
+    public static final StringColumn<User, QRoleEntity> ROLE_TABLE_DESCRIPTION = Role.DESCRIPTION.withTable(ROLE_TABLE, User::getOrCreateRole);
 
-    public static final ColumnField<User, QRoleGroupEntity, Integer> ROLE_GROUP_TABLE_ID = Role.ROLE_GROUP_TABLE_ID.withTable(ROLE_GROUP_TABLE, User::getOrCreateRole);
-    public static final ColumnField<User, QRoleGroupEntity, String> ROLE_GROUP_TABLE_NAME = Role.ROLE_GROUP_TABLE_NAME.withTable(ROLE_GROUP_TABLE, User::getOrCreateRole);
-    public static final ColumnField<User, QRoleGroupEntity, String> ROLE_GROUP_TABLE_DESCRIPTION = Role.ROLE_GROUP_TABLE_DESCRIPTION.withTable(ROLE_GROUP_TABLE, User::getOrCreateRole);
+    public static final IntegerColumn<User, QRoleGroupEntity> ROLE_GROUP_TABLE_ID = Role.ROLE_GROUP_TABLE_ID.withTable(ROLE_GROUP_TABLE, User::getOrCreateRole);
+    public static final StringColumn<User, QRoleGroupEntity> ROLE_GROUP_TABLE_NAME = Role.ROLE_GROUP_TABLE_NAME.withTable(ROLE_GROUP_TABLE, User::getOrCreateRole);
+    public static final StringColumn<User, QRoleGroupEntity> ROLE_GROUP_TABLE_DESCRIPTION = Role.ROLE_GROUP_TABLE_DESCRIPTION.withTable(ROLE_GROUP_TABLE, User::getOrCreateRole);
+
+    public static final List<Column<User, QUserEntity, ?>> USER_COLUMNS = List.of(ID, NAME, EMAIL);
+    public static final List<Column<User, QRoleEntity, ?>> ROLE_COLUMNS = List.of(ROLE_TABLE_ID, ROLE_TABLE_NAME, ROLE_TABLE_DESCRIPTION);
+    public static final List<Column<User, QRoleGroupEntity, ?>> ROLE_GROUP_COLUMNS = List.of(ROLE_GROUP_TABLE_ID, ROLE_GROUP_TABLE_NAME, ROLE_GROUP_TABLE_DESCRIPTION);
 
     private Integer id;
     private String name;
@@ -54,8 +60,8 @@ public class User extends EntityModel<Integer, User> {
 
     public static class QueryBuilder extends ModelQueryBuilder<QUserEntity, Integer, User> {
 
-        public QueryBuilder(Collection<ColumnField<User, ?, ?>> columnFields) {
-            super(USER_TABLE, columnFields, User::new);
+        public QueryBuilder(Collection<Column<User, ?, ?>> columns) {
+            super(USER_TABLE, columns, User::new);
         }
     }
 

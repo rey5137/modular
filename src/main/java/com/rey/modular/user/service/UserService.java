@@ -1,12 +1,12 @@
 package com.rey.modular.user.service;
 
 import com.querydsl.core.types.Predicate;
-import com.rey.modular.common.repository.ColumnField;
+import com.rey.modular.common.repository.model.Column;
+import com.rey.modular.common.repository.model.ModelQuery;
 import com.rey.modular.user.controller.request.UserSearchRequest;
 import com.rey.modular.user.repository.RoleGroupRepository;
 import com.rey.modular.user.repository.RoleRepository;
 import com.rey.modular.user.repository.UserRepository;
-import com.rey.modular.user.repository.entity.QUserEntity;
 import com.rey.modular.user.repository.entity.RoleEntity;
 import com.rey.modular.user.repository.entity.RoleGroupEntity;
 import com.rey.modular.user.repository.entity.UserEntity;
@@ -67,14 +67,18 @@ public class UserService {
         return userEntities;
     }
 
-    public Page<User> searchUsers(UserSearchRequest request, Collection<ColumnField<User, ?, ?>> userFields) {
+    public Page<User> searchUsers(UserSearchRequest request, Collection<Column<User, ?, ?>> userFields) {
         Integer pageSize = request.getPageSizeOptional().orElse(5);
         return userRepository.findPage(new User.QueryBuilder(userFields) {
             @Override
-            protected void populatePredicates(List<Predicate> predicates) {
+            protected void populatePredicates(List<Predicate> predicates, ModelQuery modelQuery) {
                 request.getIdOptional().ifPresent(value -> {
                     log.info("Add [{}] id to predicate", value);
-                    predicates.add(QUserEntity.userEntity.id.eq(value));
+                    predicates.add(User.ID.getPath(modelQuery).eq(value));
+                });
+                request.getRoleGroupIdOptional().ifPresent(value -> {
+                    log.info("Add [{}] role group id to predicate", value);
+                    predicates.add(User.ROLE_GROUP_TABLE_ID.getPath(modelQuery).eq(value));
                 });
             }
         }, pageSize, request.getPageNumber(), request.getPageQueryOption());

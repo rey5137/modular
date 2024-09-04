@@ -2,7 +2,6 @@ package com.rey.modular.common.repository;
 
 import com.blazebit.persistence.Criteria;
 import com.blazebit.persistence.CriteriaBuilderFactory;
-import com.blazebit.persistence.querydsl.BlazeJPAQuery;
 import com.blazebit.persistence.querydsl.BlazeJPAQueryFactory;
 import com.blazebit.persistence.spi.CriteriaBuilderConfiguration;
 import com.querydsl.core.Tuple;
@@ -31,16 +30,16 @@ public class BaseRepositoryImpl <E, ID extends Serializable> extends SimpleJpaRe
 
     @Override
     public <R> Page<R> findPage(QueryBuilder<R> queryBuilder, Integer pageSize, Integer pageNumber, PageQueryOption pageQueryOption) {
-        BlazeJPAQuery<Tuple> query = queryBuilder.buildQuery(jpaQueryFactory, false);
+        BaseQuery<Tuple> baseQuery = queryBuilder.buildQuery(jpaQueryFactory, Tuple.class);
         Pageable pageable = Pageable.ofSize(pageSize)
                 .withPage(pageNumber - 1);
         if(PageQueryOption.ONLY_COUNT.equals(pageQueryOption)) {
             Long total = count(queryBuilder);
             return new PageImpl<>(Collections.emptyList(), pageable, total);
         }
-        var rows = query.offset(pageable.getOffset())
+        var rows = baseQuery.getQuery().offset(pageable.getOffset())
                 .limit(pageSize).stream()
-                .map(queryBuilder::buildResult)
+                .map(tuple -> queryBuilder.buildResult(baseQuery, tuple))
                 .toList();
         if(PageQueryOption.NO_COUNT.equals(pageQueryOption)) {
             return new PageImpl<>(rows) {
@@ -70,8 +69,8 @@ public class BaseRepositoryImpl <E, ID extends Serializable> extends SimpleJpaRe
 
     @Override
     public <R> Long count(QueryBuilder<R> queryBuilder) {
-        BlazeJPAQuery<Tuple> query = queryBuilder.buildQuery(jpaQueryFactory, true);
-        return query.fetchCount();
+        BaseQuery<Long> baseQuery = queryBuilder.buildQuery(jpaQueryFactory, Long.class);
+        return baseQuery.getQuery().fetchCount();
     }
 
 }

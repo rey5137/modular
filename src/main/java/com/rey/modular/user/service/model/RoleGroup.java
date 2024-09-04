@@ -1,9 +1,11 @@
 package com.rey.modular.user.service.model;
 
-import com.rey.modular.common.repository.ColumnField;
-import com.rey.modular.common.repository.EntityModel;
-import com.rey.modular.common.repository.ModelQueryBuilder;
-import com.rey.modular.common.repository.TableField;
+import com.rey.modular.common.repository.model.Column;
+import com.rey.modular.common.repository.model.EntityModel;
+import com.rey.modular.common.repository.model.IntegerColumn;
+import com.rey.modular.common.repository.model.ModelQueryBuilder;
+import com.rey.modular.common.repository.model.StringColumn;
+import com.rey.modular.common.repository.model.Table;
 import com.rey.modular.user.repository.entity.QRoleGroupEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,11 +16,11 @@ import java.util.Collection;
 @Setter
 public class RoleGroup extends EntityModel<Integer, RoleGroup> {
 
-    public static final TableField<QRoleGroupEntity, QRoleGroupEntity> ROLE_GROUP_TABLE = TableField.root(QRoleGroupEntity.roleGroupEntity);
+    public static final Table<QRoleGroupEntity, QRoleGroupEntity> ROLE_GROUP_TABLE = Table.root(() -> new QRoleGroupEntity("role_group"));
 
-    public static final ColumnField<RoleGroup, QRoleGroupEntity, Integer> ID = ROLE_GROUP_TABLE.column(qUserEntity -> qUserEntity.id, RoleGroup::setId);
-    public static final ColumnField<RoleGroup, QRoleGroupEntity, String> NAME = ROLE_GROUP_TABLE.column(qUserEntity -> qUserEntity.name, RoleGroup::setName);
-    public static final ColumnField<RoleGroup, QRoleGroupEntity, String> DESCRIPTION = ROLE_GROUP_TABLE.column(qUserEntity -> qUserEntity.description, RoleGroup::setDescription);
+    public static final IntegerColumn<RoleGroup, QRoleGroupEntity> ID = ROLE_GROUP_TABLE.integerCol(roleGroup -> roleGroup.id, RoleGroup::setId);
+    public static final StringColumn<RoleGroup, QRoleGroupEntity> NAME = ROLE_GROUP_TABLE.stringCol(roleGroup -> roleGroup.name, RoleGroup::setName);
+    public static final StringColumn<RoleGroup, QRoleGroupEntity> DESCRIPTION = ROLE_GROUP_TABLE.stringCol(roleGroup -> roleGroup.description, RoleGroup::setDescription);
 
     private Integer id;
     private String name;
@@ -31,8 +33,8 @@ public class RoleGroup extends EntityModel<Integer, RoleGroup> {
 
     public static class QueryBuilder extends ModelQueryBuilder<QRoleGroupEntity, Integer, RoleGroup> {
 
-        public QueryBuilder(Collection<ColumnField<RoleGroup, ?, ?>> columnFields) {
-            super(ROLE_GROUP_TABLE, columnFields, RoleGroup::new);
+        public QueryBuilder(Collection<Column<RoleGroup, ?, ?>> columns) {
+            super(ROLE_GROUP_TABLE, columns, RoleGroup::new);
         }
     }
 

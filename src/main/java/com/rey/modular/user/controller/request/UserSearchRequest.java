@@ -14,4 +14,8 @@ public class UserSearchRequest extends PagingRequest {
     @JsonProperty("id")
     private Optional<Integer> idOptional = Optional.empty();
 
+    @JsonProperty("role_group_id")
+    private Optional<Integer> roleGroupIdOptional = Optional.empty();
+
+
 }

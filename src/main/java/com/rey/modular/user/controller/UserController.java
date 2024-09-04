@@ -1,5 +1,6 @@
 package com.rey.modular.user.controller;
 
+import com.rey.modular.common.repository.model.Column;
 import com.rey.modular.common.response.DataPageResponse;
 import com.rey.modular.common.response.GeneralResponse;
 import com.rey.modular.common.response.PageInfo;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -67,7 +69,11 @@ public class UserController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<GeneralResponse<DataPageResponse<UserResponse>>> searchUser(@RequestBody UserSearchRequest request) {
         log.info("--- Start to search user ---");
-        var userPage = userService.searchUsers(request, List.of(User.ID, User.NAME, User.ROLE_TABLE_ID, User.ROLE_TABLE_NAME, User.ROLE_TABLE_DESCRIPTION, User.ROLE_GROUP_TABLE_NAME, User.ROLE_GROUP_TABLE_ID));
+        var columns = new ArrayList<Column<User, ?, ?>>();
+        columns.addAll(User.USER_COLUMNS);
+        columns.addAll(User.ROLE_COLUMNS);
+        columns.addAll(User.ROLE_GROUP_COLUMNS);
+        var userPage = userService.searchUsers(request, columns);
         var userResponse = userPage.stream()
                 .map(UserResponse::new)
                 .toList();

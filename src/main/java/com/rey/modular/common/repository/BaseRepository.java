@@ -3,6 +3,8 @@ package com.rey.modular.common.repository;
 import com.blazebit.persistence.querydsl.BlazeJPAQuery;
 import com.blazebit.persistence.querydsl.BlazeJPAQueryFactory;
 import com.querydsl.core.Tuple;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -39,9 +41,16 @@ public interface BaseRepository<E, ID extends Serializable> extends JpaRepositor
 
     interface QueryBuilder<R> {
 
-        BlazeJPAQuery<Tuple> buildQuery(BlazeJPAQueryFactory queryFactory, Boolean isCountQuery);
+        <T> BaseQuery<T> buildQuery(BlazeJPAQueryFactory queryFactory, Class<T> resultClass);
 
-        R buildResult(Tuple tuple);
+        R buildResult(BaseQuery query, Tuple tuple);
+    }
+
+    @Getter
+    @Setter
+    class BaseQuery<T> {
+        private BlazeJPAQuery<T> query;
+        private T resultClass;
     }
 
 }

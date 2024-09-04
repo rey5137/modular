@@ -1,4 +1,4 @@
-package com.rey.modular.common.repository;
+package com.rey.modular.common.repository.model;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +13,7 @@ public abstract class EntityModel<P, M> {
 
     @Getter
     @Setter
-    private List<ColumnField<M, ?, ?>> populatedColumns;
+    private List<Column<M, ?, ?>> populatedColumns;
 
     public abstract P getPrimaryKey();
 
