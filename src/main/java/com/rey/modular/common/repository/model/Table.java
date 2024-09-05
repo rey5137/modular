@@ -2,7 +2,6 @@ package com.rey.modular.common.repository.model;
 
 import com.blazebit.persistence.querydsl.BlazeJPAQuery;
 import com.querydsl.core.JoinType;
-import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.core.types.dsl.NumberPath;

@@ -5,7 +5,6 @@ import com.blazebit.persistence.CriteriaBuilderFactory;
 import com.blazebit.persistence.querydsl.BlazeJPAQuery;
 import com.blazebit.persistence.querydsl.BlazeJPAQueryFactory;
 import com.blazebit.persistence.spi.CriteriaBuilderConfiguration;
-import com.querydsl.core.Tuple;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class BaseQueryService {
@@ -30,18 +28,24 @@ public class BaseQueryService {
         this.jpaQueryFactory = new BlazeJPAQueryFactory(entityManagerFactory.createEntityManager(), criteriaBuilderFactory);
     }
 
+    public BlazeJPAQueryFactory getQueryFactory() {
+        return jpaQueryFactory;
+    }
+
     public <T, R> Page<R> findPage(PagingQueryBuilder<T, R> queryBuilder, Integer pageSize, Integer pageNumber, PageQueryOption pageQueryOption) {
-        BaseQuery<T> baseQuery = queryBuilder.buildQuery(jpaQueryFactory);
         Pageable pageable = Pageable.ofSize(pageSize)
                 .withPage(pageNumber - 1);
         if(PageQueryOption.ONLY_COUNT.equals(pageQueryOption)) {
             long total = queryBuilder.buildCountQuery(jpaQueryFactory).getQuery().fetchCount();
             return new PageImpl<>(Collections.emptyList(), pageable, total);
         }
-        var rows = baseQuery.getQuery().offset(pageable.getOffset())
-                .limit(pageSize).stream()
-                .map(row -> queryBuilder.buildResult(baseQuery, row))
-                .toList();
+        List<R> rows;
+        if(queryBuilder instanceof DeferredPagingQueryBuilder<T,R> deferredPagingQueryBuilder && deferredPagingQueryBuilder.shouldQueryPrimaryKeyFirst(pageable.getOffset())) {
+            rows = queryDeferredPage(deferredPagingQueryBuilder, pageable);
+        }
+        else {
+            rows = queryPage(queryBuilder, pageable);
+        }
         if(PageQueryOption.NO_COUNT.equals(pageQueryOption)) {
             return new PageImpl<>(rows) {
                 @Override
@@ -68,13 +72,37 @@ public class BaseQueryService {
         }
     }
 
-    public <T, R> Long count(QueryBuilder<T, R> queryBuilder) {
-        BaseQuery<T> baseQuery = queryBuilder.buildQuery(jpaQueryFactory);
-        return baseQuery.getQuery().fetchCount();
-    }
-
     public <T, R> List<R> findAll(QueryBuilder<T, R> queryBuilder) {
         BaseQuery<T> baseQuery = queryBuilder.buildQuery(jpaQueryFactory);
+        return baseQuery.getQuery()
+                .stream()
+                .map(row -> queryBuilder.buildResult(baseQuery, row))
+                .toList();
+    }
+
+    private <T, R> List<R> queryPage(PagingQueryBuilder<T, R> queryBuilder, Pageable pageable) {
+        BaseQuery<T> baseQuery = queryBuilder.buildQuery(jpaQueryFactory);
+        return baseQuery.getQuery()
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .stream()
+                .map(row -> queryBuilder.buildResult(baseQuery, row))
+                .toList();
+    }
+
+    private <T, R> List<R> queryDeferredPage(DeferredPagingQueryBuilder<T, R> queryBuilder, Pageable pageable) {
+        BaseQuery<T> primaryKeyQuery = queryBuilder.buildPrimaryKeyQuery(jpaQueryFactory);
+        List<List<Comparable>> primaryKeyList = primaryKeyQuery.getQuery()
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .stream()
+                .map(tuple -> queryBuilder.buildPrimaryKey(primaryKeyQuery, tuple))
+                .toList();
+        if(primaryKeyList.isEmpty()) {
+            return List.of();
+        }
+
+        BaseQuery<T> baseQuery = queryBuilder.buildQuery(jpaQueryFactory, primaryKeyList);
         return baseQuery.getQuery()
                 .stream()
                 .map(row -> queryBuilder.buildResult(baseQuery, row))
@@ -114,24 +142,17 @@ public class BaseQueryService {
 
     }
 
-    public static class SimpleQueryBuilder<R> implements QueryBuilder<R, R> {
+    public interface DeferredPagingQueryBuilder<T, R> extends PagingQueryBuilder<T, R> {
 
-        Function<BlazeJPAQueryFactory, BaseQuery<R>> queryFunction;
-        public SimpleQueryBuilder(Function<BlazeJPAQueryFactory, BaseQuery<R>> queryFunction) {
-            this.queryFunction = queryFunction;
-        }
+        boolean shouldQueryPrimaryKeyFirst(Long offset);
 
-        @Override
-        public BaseQuery<R> buildQuery(BlazeJPAQueryFactory queryFactory) {
-            return queryFunction.apply(queryFactory);
-        }
+        BaseQuery<T> buildPrimaryKeyQuery(BlazeJPAQueryFactory queryFactory);
 
-        @Override
-        public R buildResult(BaseQuery<R> query, R row) {
-            return row;
-        }
+        List<Comparable> buildPrimaryKey(BaseQuery<T> query, T row);
+
+        BaseQuery<T> buildQuery(BlazeJPAQueryFactory queryFactory, List<List<Comparable>> primaryKeyList);
+
     }
-
 
     @Getter
     @Setter

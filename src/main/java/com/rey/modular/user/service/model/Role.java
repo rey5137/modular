@@ -1,9 +1,7 @@
 package com.rey.modular.user.service.model;
 
-import com.rey.modular.common.repository.model.Column;
 import com.rey.modular.common.repository.model.EntityModel;
 import com.rey.modular.common.repository.model.IntegerColumn;
-import com.rey.modular.common.repository.model.ModelQueryBuilder;
 import com.rey.modular.common.repository.model.StringColumn;
 import com.rey.modular.common.repository.model.Table;
 import com.rey.modular.user.repository.entity.QRoleEntity;
@@ -11,7 +9,6 @@ import com.rey.modular.user.repository.entity.QRoleGroupEntity;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Collection;
 import java.util.Optional;
 
 @Getter
@@ -45,13 +42,6 @@ public class Role extends EntityModel<Integer, Role> {
             roleGroupOptional = Optional.of(new RoleGroup());
         }
         return roleGroupOptional.get();
-    }
-
-    public static class QueryBuilder extends ModelQueryBuilder<QRoleEntity, Integer, Role> {
-
-        public QueryBuilder(Collection<Column<Role, ?, ?>> columns) {
-            super(ROLE_TABLE, columns, Role::new);
-        }
     }
 
 }

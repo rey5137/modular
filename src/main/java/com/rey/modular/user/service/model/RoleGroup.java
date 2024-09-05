@@ -1,16 +1,12 @@
 package com.rey.modular.user.service.model;
 
-import com.rey.modular.common.repository.model.Column;
 import com.rey.modular.common.repository.model.EntityModel;
 import com.rey.modular.common.repository.model.IntegerColumn;
-import com.rey.modular.common.repository.model.ModelQueryBuilder;
 import com.rey.modular.common.repository.model.StringColumn;
 import com.rey.modular.common.repository.model.Table;
 import com.rey.modular.user.repository.entity.QRoleGroupEntity;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Collection;
 
 @Getter
 @Setter
@@ -29,13 +25,6 @@ public class RoleGroup extends EntityModel<Integer, RoleGroup> {
     @Override
     public Integer getPrimaryKey() {
         return id;
-    }
-
-    public static class QueryBuilder extends ModelQueryBuilder<QRoleGroupEntity, Integer, RoleGroup> {
-
-        public QueryBuilder(Collection<Column<RoleGroup, ?, ?>> columns) {
-            super(ROLE_GROUP_TABLE, columns, RoleGroup::new);
-        }
     }
 
 }

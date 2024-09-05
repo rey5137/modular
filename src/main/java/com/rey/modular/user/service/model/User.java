@@ -61,7 +61,7 @@ public class User extends EntityModel<Integer, User> {
     public static class QueryBuilder extends ModelQueryBuilder<QUserEntity, Integer, User> {
 
         public QueryBuilder(Collection<Column<User, ?, ?>> columns) {
-            super(USER_TABLE, columns, User::new);
+            super(USER_TABLE, List.of(ID), columns, User::new, offset -> true);
         }
     }
 

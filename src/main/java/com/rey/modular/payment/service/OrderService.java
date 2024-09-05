@@ -1,7 +1,5 @@
 package com.rey.modular.payment.service;
 
-import com.rey.modular.common.repository.BaseQueryService.BaseQuery;
-import com.rey.modular.common.repository.BaseQueryService.SimpleQueryBuilder;
 import com.rey.modular.payment.repository.BalanceMovementRepository;
 import com.rey.modular.payment.repository.OrderRepository;
 import com.rey.modular.payment.repository.entity.BalanceMovementEntity;
@@ -52,19 +50,17 @@ public class OrderService {
     }
 
     public OrderEntity findOrderById(Integer id) {
-        return paymentQueryService.findAll(new SimpleQueryBuilder<>(queryFactory -> new BaseQuery<>(
-                queryFactory.selectFrom(QOrderEntity.orderEntity)
-                        .where(QOrderEntity.orderEntity.id.eq(id)),
-                OrderEntity.class
-        ))).stream().findFirst().orElse(null);
+        return paymentQueryService.getQueryFactory()
+                .selectFrom(QOrderEntity.orderEntity)
+                .where(QOrderEntity.orderEntity.id.eq(id))
+                .fetchFirst();
     }
 
     public List<BalanceMovementEntity> findBalanceMovementByOrderId(Integer orderId) {
-        return paymentQueryService.findAll(new SimpleQueryBuilder<>(queryFactory -> new BaseQuery<>(
-                queryFactory.selectFrom(QBalanceMovementEntity.balanceMovementEntity)
-                        .where(QBalanceMovementEntity.balanceMovementEntity.orderId.eq(orderId)),
-                BalanceMovementEntity.class
-        )));
+        return paymentQueryService.getQueryFactory()
+                .selectFrom(QBalanceMovementEntity.balanceMovementEntity)
+                .where(QBalanceMovementEntity.balanceMovementEntity.orderId.eq(orderId))
+                .fetch();
     }
 
 }
