@@ -73,7 +73,9 @@ public class UserController {
         log.info("--- Start to search user ---");
         var columns = request.getResponseFieldsOptional().map(userResponseColumnMapper::getUserColumns)
                 .orElse(UserResponseColumnMapper.ALL_COLUMNS);
-        var userPage = userService.searchUsers(request, columns);
+        var orderColumns = request.getOrdersOptional().map(userResponseColumnMapper::getUserOrderColumns)
+                .orElse(UserResponseColumnMapper.DEFAULT_ORDERS);
+        var userPage = userService.searchUsers(request, columns, orderColumns);
         var userResponse = userPage.stream()
                 .map(UserResponse::new)
                 .toList();

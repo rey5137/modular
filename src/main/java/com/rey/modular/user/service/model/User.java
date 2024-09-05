@@ -4,6 +4,7 @@ import com.rey.modular.common.repository.model.Column;
 import com.rey.modular.common.repository.model.EntityModel;
 import com.rey.modular.common.repository.model.IntegerColumn;
 import com.rey.modular.common.repository.model.ModelQueryBuilder;
+import com.rey.modular.common.repository.model.OrderColumn;
 import com.rey.modular.common.repository.model.StringColumn;
 import com.rey.modular.common.repository.model.Table;
 import com.rey.modular.user.repository.entity.QRoleEntity;
@@ -60,8 +61,8 @@ public class User extends EntityModel<Integer, User> {
 
     public static class QueryBuilder extends ModelQueryBuilder<QUserEntity, Integer, User> {
 
-        public QueryBuilder(Collection<Column<User, ?, ?>> columns) {
-            super(USER_TABLE, List.of(ID), columns, User::new, offset -> true);
+        public QueryBuilder(Collection<Column<User, ?, ?>> columns, Collection<OrderColumn<User, ?, ?>> orderColumns) {
+            super(USER_TABLE, List.of(ID), columns, orderColumns, User::new, offset -> true);
         }
     }
 

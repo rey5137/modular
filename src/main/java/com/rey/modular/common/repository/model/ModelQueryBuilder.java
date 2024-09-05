@@ -5,6 +5,8 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.rey.modular.common.repository.BaseQueryService.BaseQuery;
@@ -26,21 +28,24 @@ public class ModelQueryBuilder<T extends EntityPathBase<?>, P, M extends EntityM
     private final Table<T, T> rootTable;
     private final List<Column<M, ?, ?>> columns;
     private final Supplier<M> modelSupplier;
+    private final List<OrderColumn<M, ?, ?>> orderColumns;
     private final List<Column<M, ?, ?>> primaryKeyColumns;
     private final Function<Long, Boolean> shouldQueryPrimaryKeyFunc;
 
     public ModelQueryBuilder(Table<T, T> rootTable, Collection<Column<M, ?, ?>> columns, Supplier<M> modelSupplier) {
-        this(rootTable, List.of(), columns, modelSupplier, offset -> false);
+        this(rootTable, List.of(), columns, List.of(), modelSupplier, offset -> false);
     }
 
     public ModelQueryBuilder(Table<T, T> rootTable,
                              Collection<Column<M, ?, ?>> primaryKeyColumns,
                              Collection<Column<M, ?, ?>> columns,
+                             Collection<OrderColumn<M, ?, ?>> orderColumns,
                              Supplier<M> modelSupplier,
                              Function<Long, Boolean> shouldQueryPrimaryKeyFunc) {
         this.rootTable = rootTable;
         this.primaryKeyColumns = new ArrayList<>(primaryKeyColumns);
         this.columns = new ArrayList<>(columns);
+        this.orderColumns = new ArrayList<>(orderColumns);
         this.modelSupplier = modelSupplier;
         this.shouldQueryPrimaryKeyFunc = shouldQueryPrimaryKeyFunc;
     }
@@ -62,7 +67,8 @@ public class ModelQueryBuilder<T extends EntityPathBase<?>, P, M extends EntityM
         modelQuery.setQuery(queryFactory.from(rootTable.getQEntity(modelQuery)));
         modelQuery.setResultClass(Tuple.class);
         modelQuery.getQuery().select(buildSelections(modelQuery, primaryKeyColumns))
-                .where(buildPredicates(modelQuery));
+                .where(buildPredicates(modelQuery))
+                .orderBy(buildOrders(modelQuery));
         decorateQuery(modelQuery);
         return modelQuery;
     }
@@ -92,7 +98,8 @@ public class ModelQueryBuilder<T extends EntityPathBase<?>, P, M extends EntityM
             builder.or(ExpressionUtils.allOf(predicates));
         }
         modelQuery.getQuery().select(buildSelections(modelQuery, columns))
-                .where(builder);
+                .where(builder)
+                .orderBy(buildOrders(modelQuery));
         decorateQuery(modelQuery);
         return modelQuery;
     }
@@ -103,7 +110,8 @@ public class ModelQueryBuilder<T extends EntityPathBase<?>, P, M extends EntityM
         modelQuery.setQuery(queryFactory.from(rootTable.getQEntity(modelQuery)));
         modelQuery.setResultClass(Tuple.class);
         modelQuery.getQuery().select(buildSelections(modelQuery, columns))
-                .where(buildPredicates(modelQuery));
+                .where(buildPredicates(modelQuery))
+                .orderBy(buildOrders(modelQuery));
         decorateQuery(modelQuery);
         return modelQuery;
     }
@@ -151,6 +159,18 @@ public class ModelQueryBuilder<T extends EntityPathBase<?>, P, M extends EntityM
             builder.and(predicate);
         }
         return builder;
+    }
+
+    private OrderSpecifier[] buildOrders(ModelQuery modelQuery) {
+        OrderSpecifier[] orders = new OrderSpecifier[orderColumns.size()];
+        for (int i = 0; i < orderColumns.size(); i++) {
+            var orderColumn = orderColumns.get(i);
+            orders[i] = new OrderSpecifier(
+                    orderColumn.ascend() ? Order.ASC : Order.DESC,
+                    orderColumn.column().getPath(modelQuery)
+            );
+        }
+        return orders;
     }
 
     protected void populatePredicates(List<Predicate> predicates, ModelQuery modelQuery) {

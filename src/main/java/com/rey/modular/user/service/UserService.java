@@ -3,6 +3,7 @@ package com.rey.modular.user.service;
 import com.querydsl.core.types.Predicate;
 import com.rey.modular.common.repository.model.Column;
 import com.rey.modular.common.repository.model.ModelQuery;
+import com.rey.modular.common.repository.model.OrderColumn;
 import com.rey.modular.user.controller.request.UserSearchRequest;
 import com.rey.modular.user.repository.RoleGroupRepository;
 import com.rey.modular.user.repository.RoleRepository;
@@ -63,7 +64,7 @@ public class UserService {
 
     public List<User> getUserByIds(Collection<Integer> userIds, Collection<Column<User, ?, ?>> userColumns) {
         log.info("Finding users by ids [{}]", userIds);
-        List<User> users = userQueryService.findAll(new User.QueryBuilder(userColumns) {
+        List<User> users = userQueryService.findAll(new User.QueryBuilder(userColumns, List.of()) {
             @Override
             protected void populatePredicates(List<Predicate> predicates, ModelQuery modelQuery) {
                 predicates.add(User.ID.getPath(modelQuery).in(userIds));
@@ -73,9 +74,11 @@ public class UserService {
         return users;
     }
 
-    public Page<User> searchUsers(UserSearchRequest request, Collection<Column<User, ?, ?>> userColumns) {
+    public Page<User> searchUsers(UserSearchRequest request,
+                                  Collection<Column<User, ?, ?>> userColumns,
+                                  Collection<OrderColumn<User, ?, ?>> orderColumns) {
         Integer pageSize = request.getPageSizeOptional().orElse(5);
-        return userQueryService.findPage(new User.QueryBuilder(userColumns) {
+        return userQueryService.findPage(new User.QueryBuilder(userColumns, orderColumns) {
             @Override
             protected void populatePredicates(List<Predicate> predicates, ModelQuery modelQuery) {
                 request.getIdOptional().ifPresent(value -> {
@@ -87,12 +90,6 @@ public class UserService {
                     predicates.add(User.ROLE_GROUP_TABLE_ID.getPath(modelQuery).eq(value));
                 });
             }
-
-            @Override
-            protected void decorateQuery(ModelQuery query) {
-                query.getQuery().orderBy(User.ID.getPath(query).desc());
-            }
-
         }, pageSize, request.getPageNumber(), request.getPageQueryOption());
     }
 }

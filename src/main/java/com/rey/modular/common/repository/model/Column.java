@@ -17,6 +17,22 @@ public abstract class Column<M, T extends EntityPathBase<?>, C> {
         return buildPath(table.getQEntity(modelQuery));
     }
 
+    public OrderColumn<M, T, C> asc() {
+        return asc(false);
+    }
+
+    public OrderColumn<M, T, C> desc() {
+        return desc(false);
+    }
+
+    public OrderColumn<M, T, C> asc(boolean nullFirst) {
+        return new OrderColumn<>(this, true, nullFirst);
+    }
+
+    public OrderColumn<M, T, C> desc(boolean nullFirst) {
+        return new OrderColumn<>(this, false, nullFirst);
+    }
+
     protected abstract Path<C> buildPath(T entity);
 
     public abstract void set(M model, C columnValue);
