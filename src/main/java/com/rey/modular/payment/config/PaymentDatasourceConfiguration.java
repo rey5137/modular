@@ -20,7 +20,7 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        entityManagerFactoryRef = "paymentModuleEntityManager",
+        entityManagerFactoryRef = "paymentModuleEntityManagerFactory",
         transactionManagerRef = "paymentModuleTransactionManager",
         basePackages = "com.rey.modular.payment.repository"
 )
@@ -47,9 +47,9 @@ public class PaymentDatasourceConfiguration {
                 .build();
     }
 
-    @Bean(name = "paymentModuleEntityManager")
+    @Bean(name = "paymentModuleEntityManagerFactory")
     @Primary
-    public LocalContainerEntityManagerFactoryBean paymentModuleEntityManager(EntityManagerFactoryBuilder builder) {
+    public LocalContainerEntityManagerFactoryBean paymentModuleEntityManagerFactory(EntityManagerFactoryBuilder builder) {
         return builder
                 .dataSource(paymentModuleDataSource())
                 .packages("com.rey.modular.payment.repository.entity")
@@ -59,8 +59,8 @@ public class PaymentDatasourceConfiguration {
 
     @Bean(name = "paymentModuleTransactionManager")
     @Primary
-    public PlatformTransactionManager paymentModuleTransactionManager(@Qualifier("paymentModuleEntityManager") EntityManagerFactory paymentModuleEntityManager) {
-        return new JpaTransactionManager(paymentModuleEntityManager);
+    public PlatformTransactionManager paymentModuleTransactionManager(@Qualifier("paymentModuleEntityManagerFactory") EntityManagerFactory paymentModuleEntityManagerFactory) {
+        return new JpaTransactionManager(paymentModuleEntityManagerFactory);
     }
 
 }

@@ -23,8 +23,8 @@ public class UserInternalModuleApi implements UserApi {
 
     @SneakyThrows
     @Override
-    public GeneralResponse<List<UserResponse>> getUsers(List<Integer> userIds) {
-        var responseEntity = userController.getUsers(userIds);
+    public GeneralResponse<List<UserResponse>> getUsers(List<Integer> userIds, List<String> responseFields) {
+        var responseEntity = userController.getUsers(userIds, responseFields);
         if(responseEntity.getStatusCode().is2xxSuccessful()){
             return responseEntity.getBody();
         }

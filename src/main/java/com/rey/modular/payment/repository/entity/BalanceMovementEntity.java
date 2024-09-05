@@ -10,26 +10,26 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Entity(name = "tr_order")
+@Entity(name = "balance_movement")
 @Setter
 @Getter
-public class OrderEntity {
+public class BalanceMovementEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "payer")
-    private Integer payer;
+    @Column(name = "order_id")
+    private Integer orderId;
 
-    @Column(name = "payee")
-    private Integer payee;
+    @Column(name = "user_id")
+    private Integer userId;
 
     @Column(name = "amount")
     private BigDecimal amount;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "is_debit")
+    private Boolean isDebit;
 
 }

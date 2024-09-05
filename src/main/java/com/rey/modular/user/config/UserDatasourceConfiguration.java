@@ -19,7 +19,7 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        entityManagerFactoryRef = "userModuleEntityManager",
+        entityManagerFactoryRef = "userModuleEntityManagerFactory",
         transactionManagerRef = "userModuleTransactionManager",
         basePackages = "com.rey.modular.user.repository"
 )
@@ -45,8 +45,8 @@ public class UserDatasourceConfiguration {
                 .build();
     }
 
-    @Bean(name = "userModuleEntityManager")
-    public LocalContainerEntityManagerFactoryBean userModuleEntityManager(EntityManagerFactoryBuilder builder) {
+    @Bean(name = "userModuleEntityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean userModuleEntityManagerFactory(EntityManagerFactoryBuilder builder) {
         return builder
                 .dataSource(userModuleDataSource())
                 .packages("com.rey.modular.user.repository.entity")
@@ -55,8 +55,8 @@ public class UserDatasourceConfiguration {
     }
 
     @Bean(name = "userModuleTransactionManager")
-    public PlatformTransactionManager userModuleTransactionManager(@Qualifier("userModuleEntityManager") EntityManagerFactory userModuleEntityManager) {
-        return new JpaTransactionManager(userModuleEntityManager);
+    public PlatformTransactionManager userModuleTransactionManager(@Qualifier("userModuleEntityManagerFactory") EntityManagerFactory userModuleEntityManagerFactory) {
+        return new JpaTransactionManager(userModuleEntityManagerFactory);
     }
 
 }

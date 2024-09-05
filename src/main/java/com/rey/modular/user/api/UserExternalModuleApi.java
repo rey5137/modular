@@ -38,13 +38,14 @@ public class UserExternalModuleApi implements UserApi {
     }
 
     @Override
-    public GeneralResponse<List<UserResponse>> getUsers(List<Integer> userIds) {
+    public GeneralResponse<List<UserResponse>> getUsers(List<Integer> userIds, List<String> responseFields) {
         URI hostUri = getHostUri();
         log.info("Calling to [{}] to get users by [{}] id", hostUri, userIds);
         return restClient.get()
                 .uri(uriBuilder -> UriComponentsBuilder.fromUri(hostUri)
                         .path("/user/internal/users")
                         .queryParam("ids", userIds)
+                        .queryParam("response_fields", responseFields)
                         .build(false)
                         .toUri()
                 ).accept(MediaType.APPLICATION_JSON)
