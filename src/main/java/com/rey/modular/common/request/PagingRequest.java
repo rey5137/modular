@@ -1,7 +1,7 @@
 package com.rey.modular.common.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.rey.modular.common.repository.BaseRepository.PageQueryOption;
+import com.rey.modular.common.repository.BaseQueryService.PageQueryOption;
 import lombok.Getter;
 
 import java.util.Optional;

@@ -29,6 +29,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final RoleGroupRepository roleGroupRepository;
+    private final UserQueryService userQueryService;
 
     @PostConstruct
     public void init() {
@@ -62,7 +63,7 @@ public class UserService {
 
     public List<User> getUserByIds(Collection<Integer> userIds, Collection<Column<User, ?, ?>> userColumns) {
         log.info("Finding users by ids [{}]", userIds);
-        List<User> users = userRepository.findAll(new User.QueryBuilder(userColumns) {
+        List<User> users = userQueryService.findAll(new User.QueryBuilder(userColumns) {
             @Override
             protected void populatePredicates(List<Predicate> predicates, ModelQuery modelQuery) {
                 predicates.add(User.ID.getPath(modelQuery).in(userIds));
@@ -74,7 +75,7 @@ public class UserService {
 
     public Page<User> searchUsers(UserSearchRequest request, Collection<Column<User, ?, ?>> userColumns) {
         Integer pageSize = request.getPageSizeOptional().orElse(5);
-        return userRepository.findPage(new User.QueryBuilder(userColumns) {
+        return userQueryService.findPage(new User.QueryBuilder(userColumns) {
             @Override
             protected void populatePredicates(List<Predicate> predicates, ModelQuery modelQuery) {
                 request.getIdOptional().ifPresent(value -> {

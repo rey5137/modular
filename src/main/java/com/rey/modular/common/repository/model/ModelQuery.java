@@ -1,6 +1,6 @@
 package com.rey.modular.common.repository.model;
 
-import com.rey.modular.common.repository.BaseRepository.BaseQuery;
+import com.rey.modular.common.repository.BaseQueryService.BaseQuery;
 import lombok.Getter;
 
 import java.util.HashMap;
