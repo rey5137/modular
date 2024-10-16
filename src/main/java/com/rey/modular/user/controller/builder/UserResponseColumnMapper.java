@@ -57,8 +57,8 @@ public class UserResponseColumnMapper {
             case UserResponse.NAME -> Stream.of(User.NAME);
             case UserResponse.EMAIL -> Stream.of(User.EMAIL);
             default -> {
-                if(field.startsWith(UserResponse.ROLE))
-                    yield getRoleColumns(field.substring(UserResponse.ROLE.length()));
+                if(field.startsWith(UserResponse.ROLE + "."))
+                    yield getRoleColumns(field.substring(UserResponse.ROLE.length() + 1));
                 yield Stream.empty();
             }
         };
@@ -70,8 +70,8 @@ public class UserResponseColumnMapper {
             case RoleResponse.NAME -> Stream.of(User.ROLE_TABLE_NAME);
             case RoleResponse.DESCRIPTION -> Stream.of(User.ROLE_TABLE_DESCRIPTION);
             default -> {
-                if(field.startsWith(RoleResponse.ROLE_GROUP))
-                    yield getRoleGroupColumns(field.substring(RoleResponse.ROLE_GROUP.length()));
+                if(field.startsWith(RoleResponse.ROLE_GROUP + "."))
+                    yield getRoleGroupColumns(field.substring(RoleResponse.ROLE_GROUP.length() + 1));
                 yield Stream.empty();
             }
         };
